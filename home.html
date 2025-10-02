@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pattern Note Tracker</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(
+          to right,
+          rgb(165, 243, 252),
+          rgb(34, 211, 238)
+        );
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 28px;
+      }
+
+      .instructions {
+        background: #fff3cd;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #ffc107;
+      }
+
+      .instructions p {
+        color: #856404;
+        font-size: 14px;
+        margin: 5px 0;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .row:hover {
+        background: #e9ecef;
+      }
+
+      .row-number {
+        font-weight: bold;
+        color: #495057;
+        min-width: 60px;
+        font-size: 18px;
+      }
+
+      .bullets {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        flex: 1;
+        margin-left: 20px;
+      }
+
+      .bullet {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 2px solid #ddd;
+      }
+
+      .bullet:hover {
+        transform: scale(1.2);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .bullet.green {
+        background-color: #28a745;
+        border-color: #1e7e34;
+      }
+
+      .bullet.red {
+        background-color: #dc3545;
+        border-color: #bd2130;
+      }
+
+      .bullet.empty {
+        background-color: #e9ecef;
+        border-color: #ced4da;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+
+      .btn-reset {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-reset:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+      }
+
+      .stats {
+        margin-top: 30px;
+        padding: 20px;
+        background: #e7f3ff;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .stats h2 {
+        color: #0066cc;
+        margin-bottom: 10px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .stat-item {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .stat-label {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .stat-value {
+        color: #333;
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Pattern Note Tracker</h1>
+
+      <div class="controls">
+        <button class="btn btn-reset" id="reset-btn">Reset All</button>
+      </div>
+
+      <div id="rows-container"></div>
+
+      <div class="stats">
+        <h2>Statistics</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">Total Bullets</div>
+            <div class="stat-value">250</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Green</div>
+            <div class="stat-value" id="green-count">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Red</div>
+            <div class="stat-value" id="red-count">0</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Empty</div>
+            <div class="stat-value" id="empty-count">250</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const rowsContainer = document.getElementById("rows-container");
+      const greenCountEl = document.getElementById("green-count");
+      const redCountEl = document.getElementById("red-count");
+      const emptyCountEl = document.getElementById("empty-count");
+
+      function updateStats() {
+        const greenBullets = document.querySelectorAll(".bullet.green").length;
+        const redBullets = document.querySelectorAll(".bullet.red").length;
+        const emptyBullets = document.querySelectorAll(".bullet.empty").length;
+
+        greenCountEl.textContent = greenBullets;
+        redCountEl.textContent = redBullets;
+        emptyCountEl.textContent = emptyBullets;
+      }
+
+      function cycleBulletColor(bullet) {
+        if (bullet.classList.contains("empty")) {
+          bullet.classList.remove("empty");
+          bullet.classList.add("green");
+        } else if (bullet.classList.contains("green")) {
+          bullet.classList.remove("green");
+          bullet.classList.add("red");
+        } else if (bullet.classList.contains("red")) {
+          bullet.classList.remove("red");
+          bullet.classList.add("empty");
+        }
+        updateStats();
+      }
+
+      function createRow(index) {
+        const row = document.createElement("div");
+        row.className = "row";
+
+        const rowNumber = document.createElement("div");
+        rowNumber.className = "row-number";
+        rowNumber.textContent = `Row ${index + 1}`;
+
+        const bullets = document.createElement("div");
+        bullets.className = "bullets";
+
+        for (let i = 0; i < 50; i++) {
+          const bullet = document.createElement("div");
+          bullet.className = "bullet empty";
+          bullet.addEventListener("click", function () {
+            cycleBulletColor(this);
+          });
+          bullets.appendChild(bullet);
+        }
+
+        row.appendChild(rowNumber);
+        row.appendChild(bullets);
+
+        return row;
+      }
+
+      function resetAll() {
+        if (confirm("Are you sure you want to reset all rows?")) {
+          const bullets = document.querySelectorAll(".bullet");
+          bullets.forEach((bullet) => {
+            bullet.className = "bullet empty";
+          });
+          updateStats();
+        }
+      }
+
+      for (let i = 0; i < 5; i++) {
+        rowsContainer.appendChild(createRow(i));
+      }
+
+      document.getElementById("reset-btn").addEventListener("click", resetAll);
+    </script>
+  </body>
+</html>
